@@ -1,0 +1,25 @@
+Covid Vaccination Tool (similar to BookMyShow)
+
+User Registration: via Arogya Setu: SSO/email
+    Next vaccine eligibility based on last vaccine shot
+Search
+    Search by Zipcode / Area
+        Show nearest hospitals
+        Filter by different vaccine types
+Hospital onboarding
+    Hospital available vaccines
+        Slots : time + date
+        Number per slots per time + date
+        Availability by vaccine type
+        Confirmation notification : via SMS / Email
+    Mark slot as NA once all slots are booked
+Slot booking
+    One person can book slots for more than one ppl
+    Discuss transaction properties over the choice of datastore
+Post booking
+    Once the slot is booked, a unique ID assigned
+    This is shared with the Admin at the vaccine center
+    Then the vaccine is marked for the user as completed.
+    Certificate generation and notification via different channels(SMS/whatsapp).
+Bonus:
+    Notify when Slot becomes available
