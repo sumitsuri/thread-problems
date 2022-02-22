@@ -51,7 +51,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public synchronized String createBooking(BookingRequest bookingRequest) {
         //Create booking
-        //User bookedByUser, Vaccine vaccine, Slot slot, Hospital hospital, List<String> bookedFor
+        //Player bookedByUser, Vaccine vaccine, Slot slot, Hospital hospital, List<String> bookedFor
 
         //validation missing
         Hospital hospital = hospitalService.get(bookingRequest.getHospitalName());

@@ -1,6 +1,7 @@
-package lld.chess.validate;
+package com.test.lld.chess.validate;
 
-import lld.chess.Piece;
+
+import com.test.lld.chess.Piece;
 
 public class ValidationFactory {
 

@@ -1,9 +1,7 @@
-package lld.chess;
+package com.test.lld.chess;
 
-import lld.chess.Cell.CellStatus;
-import lld.chess.Piece.Color;
-import lld.chess.Piece.Type;
-import lld.chess.validate.ValidationFactory;
+
+import com.test.lld.chess.validate.ValidationFactory;
 
 public class Board {
 
@@ -36,52 +34,52 @@ public class Board {
 	private void initWhitePieces() {
 
 		// init Rook
-		board[0][0] = Piece.of(Color.W, Type.R, Position.of(0, 0));
-		board[0][7] = Piece.of(Color.W, Type.R, Position.of(0, 7));
+		board[0][0] = Piece.of(Piece.Color.W, Piece.Type.R, Position.of(0, 0));
+		board[0][7] = Piece.of(Piece.Color.W, Piece.Type.R, Position.of(0, 7));
 
 		// init Bishop
-		board[0][1] = Piece.of(Color.W, Type.H, Position.of(0, 1));
-		board[0][6] = Piece.of(Color.W, Type.H, Position.of(0, 6));
+		board[0][1] = Piece.of(Piece.Color.W, Piece.Type.H, Position.of(0, 1));
+		board[0][6] = Piece.of(Piece.Color.W, Piece.Type.H, Position.of(0, 6));
 
 		// init Horse
-		board[0][2] = Piece.of(Color.W, Type.B, Position.of(0, 2));
-		board[0][5] = Piece.of(Color.W, Type.B, Position.of(0, 5));
+		board[0][2] = Piece.of(Piece.Color.W, Piece.Type.B, Position.of(0, 2));
+		board[0][5] = Piece.of(Piece.Color.W, Piece.Type.B, Position.of(0, 5));
 
 		// init Queen
-		board[0][3] = Piece.of(Color.W, Type.Q, Position.of(0, 3));
+		board[0][3] = Piece.of(Piece.Color.W, Piece.Type.Q, Position.of(0, 3));
 
 		// init King
-		board[0][4] = Piece.of(Color.W, Type.K, Position.of(0, 4));
+		board[0][4] = Piece.of(Piece.Color.W, Piece.Type.K, Position.of(0, 4));
 
 		// init Pawns
 		for (int x = 0; x < 8; x++) {
-			board[1][x] = Piece.of(Color.W, Type.P, Position.of(1, x));
+			board[1][x] = Piece.of(Piece.Color.W, Piece.Type.P, Position.of(1, x));
 		}
 	}
 
 	private void initBlackPieces() {
 
 		// init Rook
-		board[7][0] = Piece.of(Color.B, Type.R, Position.of(7, 0));
-		board[7][7] = Piece.of(Color.B, Type.R, Position.of(7, 7));
+		board[7][0] = Piece.of(Piece.Color.B, Piece.Type.R, Position.of(7, 0));
+		board[7][7] = Piece.of(Piece.Color.B, Piece.Type.R, Position.of(7, 7));
 
 		// init Bishop
-		board[7][1] = Piece.of(Color.B, Type.H, Position.of(7, 1));
-		board[7][6] = Piece.of(Color.B, Type.H, Position.of(7, 6));
+		board[7][1] = Piece.of(Piece.Color.B, Piece.Type.H, Position.of(7, 1));
+		board[7][6] = Piece.of(Piece.Color.B, Piece.Type.H, Position.of(7, 6));
 
 		// init Horse
-		board[7][2] = Piece.of(Color.B, Type.B, Position.of(7, 2));
-		board[7][5] = Piece.of(Color.B, Type.B, Position.of(7, 5));
+		board[7][2] = Piece.of(Piece.Color.B, Piece.Type.B, Position.of(7, 2));
+		board[7][5] = Piece.of(Piece.Color.B, Piece.Type.B, Position.of(7, 5));
 
 		// init Queen
-		board[7][3] = Piece.of(Color.B, Type.K, Position.of(7, 3));
+		board[7][3] = Piece.of(Piece.Color.B, Piece.Type.K, Position.of(7, 3));
 
 		// init King
-		board[7][4] = Piece.of(Color.B, Type.Q, Position.of(7, 4));
+		board[7][4] = Piece.of(Piece.Color.B, Piece.Type.Q, Position.of(7, 4));
 
 		// init Pawns
 		for (int x = 0; x < 8; x++) {
-			board[6][x] = Piece.of(Color.B, Type.P, Position.of(6, x));
+			board[6][x] = Piece.of(Piece.Color.B, Piece.Type.P, Position.of(6, x));
 		}
 	}
 
@@ -114,7 +112,7 @@ public class Board {
 		Piece dstPiece = board[destination.getX()][destination.getY()];
 
 		// swap them
-		if (dstPiece.status == CellStatus.EMPTY) {
+		if (dstPiece.status == Cell.CellStatus.EMPTY) {
 			board[source.getX()][source.getY()] = dstPiece;
 			board[destination.getX()][destination.getY()] = srcPiece;
 		} else {

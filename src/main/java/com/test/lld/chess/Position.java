@@ -1,4 +1,4 @@
-package lld.chess;
+package com.test.lld.chess;
 
 import lombok.Getter;
 import lombok.Setter;

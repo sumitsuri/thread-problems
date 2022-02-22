@@ -1,0 +1,13 @@
+Always start stepbystep.
+1. create board
+    1. board will have cells.
+    2. cells will have pieces.
+2. pieces are of 2 colors. Each piece will have own moves and hence moves need to be validated.
+3. pieces are of 8 types (PAWN,KING,etc)
+4. initialise the board and players and start game.
+5. player1 will start and try to move a piece from source cell to dest cell.
+    1. validate if move(start,end) position are within board range.
+    2. validate piece color and the player playing are correct.
+    3. check if move is allowed by move-validator for respective piece.
+    4. If it's valid, remove the piece from source and updated position of piece to dest.
+    5. Check if player1 has won the game. if yes, break it. else ask player to repeat step 5.

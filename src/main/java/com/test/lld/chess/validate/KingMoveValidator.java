@@ -1,7 +1,7 @@
-package lld.chess.validate;
+package com.test.lld.chess.validate;
 
-import lld.chess.Board;
-import lld.chess.Position;
+import com.test.lld.chess.Board;
+import com.test.lld.chess.Position;
 
 public class KingMoveValidator extends MoveValidator{
 
