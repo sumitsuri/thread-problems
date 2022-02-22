@@ -22,6 +22,7 @@ public class AvailabilityCheckerCron implements Runnable{
     public void run() {
         System.out.println(String.format("[AvailabilityCheckerCron] running"));
         //get all user subscriptions
+        //city + vaccines
 
         //check availabilty in those zip or hospital and if available send notification
 

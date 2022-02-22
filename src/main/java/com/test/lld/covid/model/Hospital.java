@@ -18,6 +18,11 @@ public class Hospital {
     private Address address;
     private Map<Slot, Map<VaccineType, AtomicInteger>> vaccines;
 
+    /**
+     * 10-11 : covishield: 6
+     * @param name
+     * @param address
+     */
     public Hospital(String name, Address address) {
         //Preconditions check
         this.id = UUID.randomUUID().toString();

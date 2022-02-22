@@ -53,8 +53,11 @@ public class BookingServiceImpl implements BookingService {
         //Create booking
         //User bookedByUser, Vaccine vaccine, Slot slot, Hospital hospital, List<String> bookedFor
 
+        //validation missing
         Hospital hospital = hospitalService.get(bookingRequest.getHospitalName());
         AtomicInteger slotCount = hospital.getVaccines().get(bookingRequest.getSlot()).get(bookingRequest.getVaccineType());
+
+        //deduct total userslotcunt.
         slotCount.compareAndSet(slotCount.get(), slotCount.get()-1);
         hospital.getVaccines().get(bookingRequest.getSlot()).put(bookingRequest.getVaccineType(), slotCount);
         hospitalService.update(hospital.getName(), hospital);
@@ -80,7 +83,8 @@ public class BookingServiceImpl implements BookingService {
         //Increament slot count.
         Hospital hospital = booking.getHospital();
         AtomicInteger slotCount = hospital.getVaccines().get(booking.getSlot()).get(booking.getVaccineType());
-        slotCount.compareAndSet(slotCount.get(), slotCount.get()+1);
+        //update not required.
+        //slotCount.compareAndSet(slotCount.get(), slotCount.get()+1);
         hospital.getVaccines().get(booking.getSlot()).put(booking.getVaccineType(), slotCount);
         hospitalService.update(hospital.getName(), hospital);
     }
