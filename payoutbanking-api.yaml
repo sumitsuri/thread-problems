@@ -1,0 +1,1121 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: payoutbank
+  description: API docs for payoutbank svc
+  tags:
+    - store
+    - rest
+  links:
+    - url: https://github.com/swagger-api/swagger-petstore
+      title: GitHub Repo
+      icon: github
+    - url: https://github.com/OAI/OpenAPI-Specification/blob/master/examples/v3.0/petstore.yaml
+      title: API Spec
+      icon: code
+spec:
+  type: openapi
+  lifecycle: experimental
+  owner: team-c
+  definition: |
+    openapi: 3.0.3
+    info:
+      title: Payoutbank APIs
+      description: |-
+        API docs for payoutbank svc
+      contact:
+        email: payout-gateway-engg@cashfree.com
+      license:
+        name: Apache 2.0
+        url: http://www.apache.org/licenses/LICENSE-2.0.html
+      version: 0.0.1-SNAPSHOT
+    servers:
+      - url: http://localhost:8081/api/v1
+      - url: https://test-k8s.cashfree.com/payoutbanksvc/api/v1
+
+    tags:
+      - name: client
+        description: client account addition/modification related APIs
+      - name: beneficiary
+        description: beneficiary related APIs
+      - name: transfer
+        description: transfer related APIs
+    paths:
+      /clients:
+        post:
+          tags:
+            - client
+          summary: client addition for a partner
+          description: \[New for escrow banking\] API to add a new client for a partner. <br>
+            Partner in this case is usually cashfree & client is cashfree's merchant
+          operationId: addClient
+          requestBody:
+            $ref: '#/components/requestBodies/CreateClientInput'
+          responses:
+            '200':
+              $ref: '#/components/responses/CreateClientResponse'
+        patch:
+          tags:
+            - client
+          summary: update the details of the client
+          description: \[New for escrow banking\] update the details of the clients
+          operationId: updateClient
+          #      parameters:
+          #        - $ref: '#/components/parameters/ClientKey'
+          requestBody:
+            $ref: '#/components/requestBodies/UpdateClientInput'
+          responses:
+            '200':
+              $ref: '#/components/responses/UpdateClientResponse'
+      /clients/sources:
+        post:
+          tags:
+            - client
+          summary: add more sources for the client to fund the account
+          description: \[New for escrow banking\] add more sources for the client to fund the account
+          operationId: addClientSources
+          #      parameters:
+          #        - $ref: '#/components/parameters/ClientKey'
+          requestBody:
+            $ref: '#/components/requestBodies/AddClientSourceInput'
+          responses:
+            '200':
+              $ref: '#/components/responses/AddClientSourceResponse'
+        patch:
+          tags:
+            - client
+          summary: update an added client source
+          description: \[New for escrow banking\] update a source, mark it as active/inactive
+          operationId: updateClientSources
+          requestBody:
+            $ref: '#/components/requestBodies/UpdateClientSourceInput'
+          responses:
+            '200':
+              $ref: '#/components/responses/AddClientSourceResponse'
+      /clients/sources/verify:
+        put:
+          tags:
+            - client
+          summary: initiates verification on an already added source account
+          description: \[New for escrow banking\] initiates verification on an already added source account
+          operationId: initSrcAccVerification
+          #      parameters:
+          #        - $ref: '#/components/parameters/ClientKey'
+          requestBody:
+            $ref: '#/components/requestBodies/InitSrcVerificationInput'
+          responses:
+            '200':
+              $ref: '#/components/responses/InitSourceAccVerifyResponse'
+      /clients/sub_merchant_regiatration:
+        put:
+          tags:
+            - client
+          summary: This API will be used by partner to register client as sub-merchant at UPI switch.
+          description: \[New for escrow banking\] This API will be used by partner to register client as sub-merchant at UPI switch.
+          operationId: subMerchantRegiatration
+          #      parameters:
+          #        - $ref: '#/components/parameters/ClientKey'
+          requestBody:
+            $ref: '#/components/requestBodies/SubMerchantRegistrationInput'
+          responses:
+            '200':
+              $ref: '#/components/responses/SubMerchantRegistrationResponse'
+      /v1/bank/addbeneficiary:
+        post:
+          tags:
+            - beneficiary
+          summary: adds a beneficiary to the given client (in case of escrow account)/fs (in case of wallet/connected account)
+          description: adds a beneficiary to the given client (in case of escrow account)/fs (in case of wallet/connected account)
+          operationId: addBeneficiary
+          requestBody:
+            $ref: '#/components/requestBodies/AddBeneInput'
+          responses:
+            '200':
+              $ref: '#/components/responses/AddBeneResponse'
+      /v1/bank/modifybeneficiary:
+        post:
+          tags:
+            - beneficiary
+          summary: modify an existing beneficiary
+          description: modify an existing beneficiary
+          operationId: modifyBeneficiary
+          requestBody:
+            $ref: '#/components/requestBodies/AddBeneInput'
+          responses:
+            '200':
+              $ref: '#/components/responses/AddBeneResponse'
+      /v1/bank/verifybeneficiary:
+        post:
+          tags:
+            - beneficiary
+          summary: verify an existing beneficiary
+          description: verify an existing beneficiary, <br>
+            \[New for escrow\] in case of vpa, it need not be a existing bene
+          operationId: verifyBeneficiary
+          requestBody:
+            $ref: '#/components/requestBodies/VerifyBeneInput'
+          responses:
+            '200':
+              $ref: '#/components/responses/VerifyBeneResponse'
+      /v1/bank/requestTransfer:
+        post:
+          tags:
+            - transfer
+          summary: request a sync/async transfer
+          description: request a sync/async transfer, returns a bankStatus(statusCode) which is used by the transferSvc to determine the status of the transfer
+          operationId: makeTransfer
+          requestBody:
+            $ref: '#/components/requestBodies/RequestTransferInput'
+          responses:
+            '200':
+              $ref: '#/components/responses/RequestTransferResponse'
+            '400':
+              $ref: '#/components/responses/CommonErrorResponse'
+            '405':
+              $ref: '#/components/responses/CommonErrorResponse'
+            '500':
+              $ref: '#/components/responses/CommonErrorResponse'
+            '501':
+              $ref: '#/components/responses/CommonErrorResponse'
+      /v1/bank/getTransferStatus:
+        post:
+          tags:
+            - transfer
+          summary: get the status for a particular transfer
+          description: get the status for a particular transfer, returns a bankStatus(statusCode) which is used by the transferSvc to determine the status of the transfer
+          operationId: getTransferStatus
+          requestBody:
+            $ref: '#/components/requestBodies/StatusRequest'
+          responses:
+            '200':
+              $ref: '#/components/responses/StatusResponse'
+            '400':
+              $ref: '#/components/responses/CommonErrorResponse'
+            '405':
+              $ref: '#/components/responses/CommonErrorResponse'
+            '500':
+              $ref: '#/components/responses/CommonErrorResponse'
+            '501':
+              $ref: '#/components/responses/CommonErrorResponse'
+      /v1/bank/internalFundTransfer:
+        post:
+          tags:
+            - transfer
+          summary: request a sync/async transfer back to client/merchant source account
+          description: request a sync/async transfer back to client/merchant source account, returns a bankStatus(statusCode) which is used by the transferSvc to determine the status of the transfer
+          operationId: makeInternalFundTransfer
+          requestBody:
+            $ref: '#/components/requestBodies/RequestTransferInput'
+          responses:
+            '200':
+              $ref: '#/components/responses/RequestTransferResponse'
+      /v1/bank/getBalance:
+        post:
+          tags:
+            - client
+          summary: get the balance for a bank account
+          description: get the balance for a bank account
+          operationId: getBalance
+          requestBody:
+            $ref: '#/components/requestBodies/GetBalanceInput'
+          responses:
+            '200':
+              $ref: '#/components/responses/GetBalanceResponse'
+      /v1/bank/getAccountStatement:
+        post:
+          tags:
+            - client
+          summary: get the account statement for the client
+          description: contains both credit & debit transactions
+          operationId: getAccountStatement
+          requestBody:
+            $ref: '#/components/requestBodies/GetStatementInput'
+          responses:
+            '200':
+              $ref: '#/components/responses/GetStatementResponse'
+
+    components:
+      schemas:
+        CommonErrorResponse:
+          type: object
+          properties:
+            title:
+              type: string
+            detail:
+              type: string
+            status:
+              type: string
+        CommonInput:
+          type: object
+          properties:
+            request_id:
+              type: string
+              description: request id to identify the client addition transaction
+            cf_gateway:
+              type: string
+              description: the gateway to be used
+            account_id:
+              type: string
+              description: the account details to fetch to initiate a bank request
+            cred_id:
+              type: string
+              description: the cred id to fetch the creds to initiate a bank request
+        SourceAccountInput:
+          type: object
+          properties:
+            source_account_no:
+              type: string
+              description: default source account for the client, it can be updated later
+            source_account_ifsc:
+              type: string
+              description: default source account for the client, it can be updated later
+        ClientDetailsInput:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Client name as per PAN
+            mobile_no:
+              type: string
+              description: mobile no of the client
+            email_id:
+              type: string
+              description: email id of the client
+            kyc_details:
+              $ref: '#/components/schemas/KYCDetails'
+        KYCDetails:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                description: type of the kyc detail
+                enum:
+                  - ADHAAR
+                  - GST
+                  - PAN
+              value:
+                description: value of the kyc detail.
+                type: string
+              serialized_file:
+                description: Base64 encoded file as string, allowed Formats - [PNG, JPG, PDF]
+                type: string
+        CreateClientInput:
+          type: object
+          required:
+            - request_id
+            - cf_gateway
+            - account_id
+            - cred_id
+            - name
+            - mobile_no
+            - email_id
+            - kyc_details
+            - identifier
+            - purpose
+          allOf:
+            - $ref: '#/components/schemas/CommonInput'
+            - $ref: '#/components/schemas/ClientDetailsInput'
+            - $ref: '#/components/schemas/SourceAccountInput'
+            - type: object
+              properties:
+                identifier:
+                  type: string
+                  description: identifier of the client
+                purpose:
+                  type: string
+                  description: purpose of payouts that will be used by the client. Should be a subset of the partner purpose
+        UpdateClientInput:
+          type: object
+          required:
+            - request_id
+            - cf_gateway
+            - account_id
+            - cred_id
+            - status
+          allOf:
+            - $ref: '#/components/schemas/CommonInput'
+            - $ref: '#/components/schemas/ClientDetailsInput'
+            - type: object
+              properties:
+                existence_status:
+                  $ref: '#/components/schemas/EntityExistenceStatus'
+                kyc_details:
+                  $ref: '#/components/schemas/KYCDetails'
+        AddClientSourceInput:
+          type: object
+          required:
+            - request_id
+            - cf_gateway
+            - account_id
+            - cred_id
+            - source_account_no
+            - source_account_ifsc
+          allOf:
+            - $ref: '#/components/schemas/CommonInput'
+            - $ref: '#/components/schemas/SourceAccountInput'
+        VerifySourceInput:
+          type: object
+          required:
+            - request_id
+            - cf_gateway
+            - account_id
+            - cred_id
+            - source_account_no
+            - source_account_ifsc
+          allOf:
+            - $ref: '#/components/schemas/CommonInput'
+            - $ref: '#/components/schemas/SourceAccountInput'
+            - type: object
+              properties:
+                kyc_details:
+                  $ref: '#/components/schemas/KYCDetails'
+        SubMerchantRegistrationInput:
+          type: object
+          required:
+            - request_id
+            - cf_gateway
+            - account_id
+            - cred_id
+            - mcc
+            - business_type
+            - per_day_transaction_count
+            - per_day_throughput_limit
+            - per_day_max_transaction_amount
+            - city
+            - state_code
+            - pincode
+          allOf:
+            - $ref: '#/components/schemas/CommonInput'
+            - type: object
+              properties:
+                mcc:
+                  type: string
+                business_type:
+                  type: string
+                per_day_transaction_count:
+                  type: string
+                per_day_throughput_limit:
+                  type: string
+                per_day_max_transaction_amount:
+                  type: string
+                state_code:
+                  type: number
+                city:
+                  type: string
+                pincode:
+                  type: string
+        BeneRequest:
+          type: object
+          properties:
+            accountId:
+              type: string
+              description: account id from MPAConfigs
+            cfCredId:
+              type: string
+              description: pk of MPAGatewayCreds
+            bankAccount:
+              type: string
+              description: mandatory for a banktransfer mode of transfer
+            ifsc:
+              type: string
+              description: mandatory for a banktransfer mode of transfer
+            name:
+              type: string
+              description: name of bene
+            cfGatewayName:
+              type: string
+              description: gateway to be used to add beneficiary
+            beneficiaryCode:
+              type: string
+              description: beneficiary code
+            vpa:
+              type: string
+              description: vpa of the bene, mandatory for a upi mode transaction
+            beneLEI:
+              type: string
+            purpose:
+              type: string
+              description: \[New\] required in case of escrow banking, where the purpose of a bene addition needs to be defined.
+            beneficiary_identifier:
+              type: string
+              description: \[New\] required in case of escrow banking, only in the modify bene API. indetifier of the bene to be modified
+            status:
+              type: string
+              description: \[New\] required in case of escrow banking, only in the modify bene API. possible values are = `active` or `inactive`
+        VerifyBeneRequest:
+          type: object
+          properties:
+            accountId:
+              type: string
+              description: account id from MPAConfigs
+            cfCredId:
+              type: string
+              description: pk of MPAGatewayCreds
+            bankAccount:
+              type: string
+              description: mandatory for a banktransfer mode of transfer
+            ifsc:
+              type: string
+              description: mandatory for a banktransfer mode of transfer
+            emailId:
+              type: string
+              description: emailId of bene
+            cfGatewayName:
+              type: string
+              description: gateway to be used to add beneficiary
+            beneficiaryCode:
+              type: string
+              description: beneficiary code
+            vpa:
+              type: string
+              description: vpa of the bene, mandatory for a upi mode transaction
+            status:
+              type: string
+        TransferRequest:
+          type: object
+          properties:
+            cfTransferId:
+              type: string
+              description: CT id that is to be used as a reference for initiating the transaction
+            bankAccount:
+              type: string
+              description: bank account number of bene, mandatory for a bank transfer. Will be an sourceAccount no in case of an internal fund transfer, and in that case, mandatory.
+            ifsc:
+              type: string
+              description: ifsc code of the bene, mandatory in case of a bank transfer. Will be an sourceAccount ifsc no in case of an internal fund transfer, and in that case, mandatory.
+            bankBeneficiaryCode:
+              type: string
+              description: bankBeneficiaryCode
+            phoneNumber:
+              type: string
+              description: phoneNumber of the bene
+            vpa:
+              type: string
+              description: vpa of bene, mandatory in case of a upi transfer
+            name:
+              type: string
+              description: name of bene, mandatory for a upi transfer
+            remitterName:
+              type: string
+              description: remitterName
+            cfGatewayName:
+              type: string
+              description: cfGatewayName to be used for the transfer
+            shouldRetry:
+              type: boolean
+              description: currently applicable only for RBL bank
+            transferType:
+              type: string
+              description: mode to be used, allowed values = NEFT, IMPS, RTGS, UPI, CC_UPI. In case of an internal fund transfer, values = NEFT, IMPS, RTGS
+            currencyCode:
+              type: string
+              description: defaulted to INR
+            amount:
+              type: number
+              description: amount to be transferred
+            remarks:
+              type: string
+              description: remarks for the transfer
+            email:
+              type: string
+            accountId:
+              type: string
+              description: id of MPAConfig, the accountId maintained at our end
+            credId:
+              type: string
+              description: id of MPAGatewayCreds, required to fetch the creds for the transfer
+            cardNumber:
+              type: string
+              description: required only for a transfer through card gateway
+            cardType:
+              type: string
+              description: required only for a transfer through card gateway
+            transactionDate:
+              type: string
+            transactionTime:
+              type: string
+            referenceNo:
+              type: string
+            isTokenized:
+              type: boolean
+            token:
+              type: string
+            networkType:
+              type: string
+            cryptogram:
+              type: string
+            tokenExpiry:
+              type: string
+            tokenPANSequenceNumber:
+              type: string
+            originalTransactionMcc:
+              type: string
+            originalTransactionNumber:
+              type: string
+            metadata:
+              type: string
+              description: meta to be passed on to the bank
+            beneficiary_identifier:
+              type: string
+              description: \[New for escrow banking\] identifier for the beneficiary fetched from the bank, needs to be provided for all the make transfer requests to the bene in case of escrow wallet model for bank transfers
+            transaction_type:
+              type: string
+              description: \[New for escrow banking\] values = (fund_transfer/refund, defaults=fund_transfer)
+        StatusRequest:
+          type: object
+          properties:
+            cfTransferId:
+              type: string
+              description: CT id that is to be used as a reference for initiating the transaction
+            cfGatewayName:
+              type: string
+              description: cfGatewayName to be used for the transfer
+            transferType:
+              type: string
+              description: mode to be used, allowed values = NEFT, IMPS, RTGS, UPI, CC_UPI
+            txnAmount:
+              type: number
+              description: amount to be transferred
+            rrn:
+              type: string
+              description: remarks for the transfer
+            referenceNo:
+              type: string
+            accountId:
+              type: string
+              description: id of MPAConfig, the accountId maintained at our end
+            credId:
+              type: string
+              description: id of MPAGatewayCreds, required to fetch the creds for the transfer\
+            phoneNumber:
+              type: string
+              description: phone number of the bene
+            cardNumber:
+              type: string
+              description: required only for a transfer through card gateway
+            transactionDate:
+              type: string
+            transactionTime:
+              type: string
+            metadata:
+              type: string
+              description: meta to be passed on to the bank
+        LoadCredRequest:
+          type: object
+          properties:
+            credId:
+              type: string
+              description: credID, id of MPAGatewayCreds
+            accountId:
+              type: string
+              description: acocuntId, id of MPAConfigs
+            cfGatewayName:
+              type: string
+              description: cfGatewayName to be used for the transfer
+            connBankRegId:
+              type: string
+              description: connected banking registered id for cf, mandatory in case of fetching balance of a connected account of merchant
+            requestID:
+              type: string
+              description: \[New for escrow\] unique identifier for the operation, used in case of escrow banking
+        AccountStatementRequest:
+          type: object
+          properties:
+            credId:
+              type: string
+              description: credID, id of MPAGatewayCreds
+            accountId:
+              type: string
+              description: acocuntId, id of MPAConfigs
+            cfGatewayName:
+              type: string
+              description: cfGatewayName to be used for the transfer
+            startDate:
+              type: string
+              format: 'date'
+              description: date from which the transactions are to be fetched
+            endDate:
+              type: string
+              format: 'date'
+              description: date to which the transactions are to be fetched
+            page_no:
+              type: string
+              description: \[New for escrow\] page by default contains n no of records, pass this to incrementally fetch the data
+            requestID:
+              type: string
+              description: \[New for escrow\] unique identifier for the operation, used in case of escrow banking
+        UpdateClientSourceInput:
+          type: object
+          required:
+            - request_id
+            - cf_gateway
+            - account_id
+            - cred_id
+            - source_account_no
+            - status
+          allOf:
+            - $ref: '#/components/schemas/CommonInput'
+            - type: object
+              properties:
+                source_account_no:
+                  type: string
+                  description: default source account for the client, it can be updated later
+                existence_status:
+                  $ref: '#/components/schemas/EntityExistenceStatus'
+        EntityExistenceStatus:
+          type: string
+          description: existance status of the entity
+          enum:
+            - ACTIVE
+            - INACTIVE
+        BaseClientResponse:
+          type: object
+          properties:
+            request_id:
+              type: string
+              description: the request id that was passed as an input, identifier for the request
+            status:
+              type: string
+              description: status of the request, will be a transfer status
+            response_code:
+              type: string
+              description: the response code from the bank
+            message:
+              type: string
+              description: the response message, can be same as what bank returns
+        ClientResponse:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/BaseClientResponse'
+            - type: object
+              properties:
+                client_identifier:
+                  type: string
+                  description: the client's identifier returned by the bank, can be same or different according to the bank integration
+                ecollect_account_no:
+                  type: string
+                  description: ecollect account no for the client
+        BeneResponse:
+          type: object
+          properties:
+            message:
+              type: string
+              description: response message after bene addtion/modification
+            requestRefNo:
+              type: string
+              description: request reference no from the bank
+            rawBankResponse:
+              type: string
+              description: response from bank in decoded format
+            status:
+              type: string
+              description: status of addition/modification
+            beneficiaryCode:
+              type: string
+              description: beneficiaryCode
+            beneficiary_identifier:
+              type: string
+              description: \[New for escrow banking\] identifier for the beneficiary fetched from the bank, needs to be provided for all the make transfer requests to the bene in case of escrow wallet model
+        VerifyBeneResponse:
+          type: object
+          properties:
+            message:
+              type: string
+              description: response message after bene addtion/modification
+            requestRefNo:
+              type: string
+              description: request reference no from the bank
+            rawBankResponse:
+              type: string
+              description: response from bank in decoded format
+            status:
+              type: string
+              description: status of addition/modification
+            beneficiaryCode:
+              type: string
+              description: beneficiaryCode
+            customer_name:
+              type: string
+              description: \[New for escrow banking\] name of the customer ??
+        TransferResponse:
+          type: object
+          properties:
+            cfTransferId:
+              type: string
+              description: id of the CorePayoutTransfer table, identifier of a transfer
+            statusCode:
+              type: string
+              description: the status from the bank, the end status of the transfer will be determined with this code.
+            message:
+              type: string
+              description: message for the transfer from the bank
+            bankStatus:
+              type: string
+              description: status from the bank for reference, not returned in all type of transfers
+            subStatus:
+              type: string
+              description: secondary categorization of status
+            txStatusResponse:
+              type: object
+              description: status response for the txn
+              properties:
+                bankReferenceNo:
+                  type: string
+                  description: utr from the bank
+                beneficiaryReferenceNo:
+                  type: string
+            transferType:
+              type: string
+              description: mode of the transfer
+            transferMode:
+              type: string
+              description: type - banktransfer/upi
+            rawBankRequest:
+              type: string
+              description: decoded request sent to bank
+            rawBankResponse:
+              type: string
+              description: decoded response from bank
+            nameAtBank:
+              type: string
+            statusDesc:
+              type: string
+            responseNo:
+              type: string
+            subStatusCode:
+              type: string
+            attemptNo:
+              type: string
+        StatusResponse:
+          type: object
+          properties:
+            cfTransferId:
+              type: string
+              description: id of the CorePayoutTransfer table, identifier of a transfer
+            statusCode:
+              type: string
+              description: the status from the bank, the end status of the transfer will be determined with this code.
+            message:
+              type: string
+              description: message for the transfer from the bank
+            bankStatus:
+              type: string
+              description: status from the bank for reference, not returned in all type of transfers
+            txStatusResponse:
+              type: object
+              description: status response for the txn
+              properties:
+                bankReferenceNo:
+                  type: string
+                  description: utr from the bank
+                beneficiaryReferenceNo:
+                  type: string
+            transferType:
+              type: string
+              description: mode of the transfer
+            transferMode:
+              type: string
+              description: type - banktransfer/upi
+            rawBankRequest:
+              type: string
+              description: decoded request sent to bank
+            rawBankResponse:
+              type: string
+              description: decoded response from bank
+            nameAtBank:
+              type: string
+            transactionDate:
+              type: string
+              description: txn date from the bank
+            statusDesc:
+              type: string
+            responseNo:
+              type: string
+            subStatusCode:
+              type: string
+            attemptNo:
+              type: number
+            errorMessage:
+              type: string
+            reason:
+              type: string
+            rrn:
+              type: string
+            incrementalRawBankResponse:
+              type: string
+        BalanceResponse:
+          type: object
+          properties:
+            balance:
+              type: number
+              description: balance for the account
+            lowBalanceAlert:
+              type: boolean
+              description: if the balance is low
+            message:
+              type: string
+              description: message for the transfer from the bank
+            status:
+              type: string
+              description: status of the operation, balance should be parsed only in case of success
+            errorCode:
+              type: string
+              description: error code after translating the granular status code from the bank
+        AccountStatementResponse:
+          type: object
+          properties:
+            statusCode:
+              type: string
+              description: status of the operation, statement should be parsed only in case of success
+            statusDesc:
+              type: string
+              description: status description, can contain error description.
+            rawStatement:
+              type: number
+              description: raw response from the gateway
+            message:
+              type: string
+              description: message for the transfer from the bank
+            page_no:
+              type: string
+              description: \[New for escrow\] returns the max records that will be returned in a single call
+            records:
+              type: array
+              description: statement records
+              items:
+                properties:
+                  type:
+                    type: string
+                    description: type of statement record
+                  amount:
+                    type: number
+                    format: int64
+                    description: amount for the record
+                  referenceId:
+                    type: string
+                    description: reference id of the transaction
+                  status:
+                    type: string
+                    description: status of the transaction
+                  transactionTime:
+                    type: string
+                    description: txn time
+                  utr:
+                    type: string
+                    description: utr for the txn
+                  closingBalance:
+                    type: number
+                    format: int64
+                    description: closing balance after the transaction
+      requestBodies:
+        CreateClientInput:
+          description: Input to create a new client
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateClientInput'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/CreateClientInput'
+        UpdateClientInput:
+          description: Update an existing client
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateClientInput'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/UpdateClientInput'
+        AddClientSourceInput:
+          description: Add client source input
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddClientSourceInput'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/AddClientSourceInput'
+        InitSrcVerificationInput:
+          description: Initiate source account verification input
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifySourceInput'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/VerifySourceInput'
+        SubMerchantRegistrationInput:
+          description: Input to register an existing client as a sub merchant for the client to do UPI payouts
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubMerchantRegistrationInput'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/SubMerchantRegistrationInput'
+        AddBeneInput:
+          description: Input to add a new beneficiary against an account id
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BeneRequest'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/BeneRequest'
+        VerifyBeneInput:
+          description: Input to verify beneficiary against an account id
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyBeneRequest'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/VerifyBeneRequest'
+        RequestTransferInput:
+          description: input for the request transfer API
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferRequest'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/TransferRequest'
+        StatusRequest:
+          description: input for the check status API
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusRequest'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/StatusRequest'
+        GetBalanceInput:
+          description: input for the get balance API
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoadCredRequest'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/LoadCredRequest'
+        GetStatementInput:
+          description: input for the get statement API
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountStatementRequest'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/AccountStatementRequest'
+
+        UpdateClientSourceInput:
+          description: update client source input
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateClientSourceInput'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/UpdateClientSourceInput'
+      parameters:
+        PartnerKey:
+          name: partner_key
+          in: path
+          description: partner key registered with the bank (identifier for cashfree)
+          required: true
+          schema:
+            type: string
+        ClientKey:
+          name: client_key
+          in: path
+          description: client key that is registered with the bank (identifier for merchant at the bank end)
+          required: true
+          schema:
+            type: string
+      responses:
+        CreateClientResponse:
+          description: Response object for create client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+        UpdateClientResponse:
+          description: Response object for update client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseClientResponse'
+        AddClientSourceResponse:
+          description: Response object for update client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseClientResponse'
+        InitSourceAccVerifyResponse:
+          description: Initiate source account verification response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseClientResponse'
+        SubMerchantRegistrationResponse:
+          description: sub merchant registration response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseClientResponse'
+        AddBeneResponse:
+          description: Add beneficiary response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BeneResponse'
+        VerifyBeneResponse:
+          description: Verify beneficiary response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyBeneResponse'
+        RequestTransferResponse:
+          description: response from the request transfer API
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferResponse'
+        CommonErrorResponse:
+          description: common error response for all APIs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonErrorResponse'
+        StatusResponse:
+          description: response from the check status API
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        GetBalanceResponse:
+          description: response from the get balance API
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+        GetStatementResponse:
+          description: response from the get statement API
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountStatementResponse'
